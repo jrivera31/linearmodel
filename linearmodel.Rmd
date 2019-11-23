@@ -1,0 +1,91 @@
+---
+title: "linear model project"
+author: "Jason Rivera"
+date: "November 20, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+sim = read.csv('sim.csv', header=TRUE)
+attach(sim)
+
+```
+
+# Introduction
+This data was taken from http://onlinestatbook.com/case_studies_rvls/physical_strength/index.html The data set contains observations from job applications on their sim score arm strength, grip and rating.
+
+We write there models:
+
+1. sims = f(arm)
+
+2. sims = f(grip)
+
+3. sims = f(arm,grip)
+
+## First Model
+
+```{r}
+model1 = lm(SIMS~ARM)
+# scatterplot
+plot(ARM, SIMS)
+abline(model1)
+#numeric summary
+summary.lm(model1)
+```
+This scatterplot shows the higher your arm strength the the higher your sim score but it is not entirely accurate.
+
+
+The prediction interval for model 1 when arm=94, grip=88 is:
+
+```{r}
+newdata = data.frame(ARM=94, GRIP=88)
+predict(model1, newdata, interval='prediction')
+```
+
+If your arm strength is 94 then we predict you'll have an average sim score between -1.401556 and 3.469079
+
+## Second Model
+
+```{r}
+model2 = lm(SIMS~GRIP)
+# scatterplot
+plot(GRIP, SIMS)
+abline(model2)
+#numeric summary
+summary.lm(model2)
+```
+This scatterplot shows that the stronger the grip the higher the sims, but its not entirely accurate.
+
+
+The prediction interval for model 2 when arm=94, grip=88 is:
+
+```{r}
+predict(model2, newdata, interval='prediction')
+```
+If your grip score is 88 we predict your average sim score will be between -3.38434 and 1.766475
+
+
+## Third Model
+
+```{r}
+model3 = lm(SIMS~ARM+GRIP)
+#numeric summary
+summary.lm(model3)
+```
+The p-value is 2.2e-16 which is less than 0.5 so we have evidence that arm strength is related to grip. 
+
+```{r}
+predict(model3, newdata, interval='prediction')
+```
+
+Having an arm strength of 94 and grip of 88 gives you and average sim score between -2.070793 and 2.524175
+
+```{r}
+anova(model1, model3)
+```
+model 3 is a better predictor using arm strength and grip than just using arm strength.
+
+## Discussion and Conclusion
+In our first model we discovered that measuring arm strength alone gets you a higher average sim score (-1.401556 and 3.469079) than the second model grip (-3.38434 and 1.766475), but the p-value of ARM + GRIP gives us a p-value of 2.2e-16 which is far less than 0.05. Giving us evidence that arm strength is related to grip. Also Measuring ARM+Grip (model3) is a better predictor of simulation scores than just ARM (model1)
+
